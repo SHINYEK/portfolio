@@ -2,6 +2,7 @@
 import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue'
 
 const language = ref('ko')
+const baseUrl = import.meta.env.BASE_URL
 
 const profile = {
   nameKo: '김신예',
@@ -87,6 +88,8 @@ const translations = {
       '사내 UI 프레임워크 개발, 운영, 이슈 대응',
       'UI 가이드 문서 90% 이상 작성, 매주 정기 배포, 개발자 교육 약 10회'
     ],
+    strengthKicker: 'Core Work Patterns',
+    strengthTitle: '업무 화면 개발 강점',
     snapshotTitle: '현재 핵심 업무',
     snapshotName: 'WEBUI 2.0 사내 UI 프레임워크',
     snapshotText:
@@ -236,6 +239,7 @@ const translations = {
       ['Company', profile.companyKo],
       ['Role', 'B2B Frontend / MES UI']
     ],
+    contactCtaText: '프로젝트 화면 개발, 사내 UI 프레임워크, MES 업무 화면 관련 경험을 더 자세히 이야기할 수 있습니다.',
     contactMailLabel: '이메일 보내기'
   },
   en: {
@@ -271,6 +275,8 @@ const translations = {
       'Internal UI framework development, operation, and issue response',
       '90%+ UI guide documentation, weekly releases, and about 10 training sessions'
     ],
+    strengthKicker: 'Core Work Patterns',
+    strengthTitle: 'Business Screen Development Strengths',
     snapshotTitle: 'Current Focus',
     snapshotName: 'WEBUI 2.0 Internal UI Framework',
     snapshotText:
@@ -421,6 +427,8 @@ const translations = {
       ['Company', profile.companyEn],
       ['Role', 'B2B Frontend / MES UI']
     ],
+    contactCtaText:
+      'I can share more detail about project UI development, internal UI frameworks, and MES business screen experience.',
     contactMailLabel: 'Send Email'
   }
 }
@@ -527,7 +535,7 @@ onUnmounted(() => {
           </div>
         </div>
         <figure class="hero-visual reveal">
-          <img src="/b2b-dashboard-hero.png" alt="B2B 업무 시스템 대시보드 목업" />
+          <img :src="`${baseUrl}b2b-dashboard-hero.png`" alt="B2B 업무 시스템 대시보드 목업" />
         </figure>
       </section>
 
@@ -564,8 +572,8 @@ onUnmounted(() => {
         </div>
         <div class="strength-panel reveal">
           <div class="strength-panel-head">
-            <span>Core Work Patterns</span>
-            <strong>업무 화면 개발 강점</strong>
+            <span>{{ copy.strengthKicker }}</span>
+            <strong>{{ copy.strengthTitle }}</strong>
           </div>
           <ul class="check-list strength-list">
             <li v-for="(item, index) in copy.strengths" :key="item" class="reveal">
@@ -708,13 +716,18 @@ onUnmounted(() => {
           <h2 class="contact-title">{{ copy.contactTitle }}</h2>
         </div>
         <p>{{ copy.contactText }}</p>
-        <div class="contact-grid" aria-label="Contact details">
-          <div v-for="item in copy.contactCards" :key="item[0]">
-            <span>{{ item[0] }}</span>
-            <strong>{{ item[1] }}</strong>
+        <div class="contact-panel">
+          <div class="contact-grid" aria-label="Contact details">
+            <div v-for="item in copy.contactCards" :key="item[0]">
+              <span>{{ item[0] }}</span>
+              <strong>{{ item[1] }}</strong>
+            </div>
+          </div>
+          <div class="contact-cta">
+            <p>{{ copy.contactCtaText }}</p>
+            <a class="primary-action contact-mail" :href="`mailto:${profile.email}`">{{ copy.contactMailLabel }}</a>
           </div>
         </div>
-        <a class="primary-action contact-mail" :href="`mailto:${profile.email}`">{{ copy.contactMailLabel }}</a>
       </section>
     </main>
   </div>
