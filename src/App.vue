@@ -1,8 +1,42 @@
 <script setup>
 import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue'
+import {
+  AppWindow,
+  Award,
+  Blocks,
+  BookOpenCheck,
+  Bot,
+  Building2,
+  CalendarDays,
+  Code2,
+  Eye,
+  Factory,
+  GitPullRequest,
+  GraduationCap,
+  ListChecks,
+  Recycle,
+  ShieldCheck,
+  TableProperties
+} from '@lucide/vue'
 
 const language = ref('ko')
-const baseUrl = import.meta.env.BASE_URL
+const selectedProject = ref(null)
+
+const workIcons = {
+  UI: TableProperties,
+  FW: Blocks,
+  BD: AppWindow,
+  GD: BookOpenCheck
+}
+
+const aboutMetricIcons = [Factory, BookOpenCheck, GraduationCap]
+const projectIcons = {
+  framework: Blocks,
+  manufacturing: Factory,
+  recycle: Recycle
+}
+const frameworkIcons = [BookOpenCheck, CalendarDays, AppWindow, GraduationCap]
+const workflowIcons = [Bot, Code2, ShieldCheck, GitPullRequest]
 
 const profile = {
   nameKo: '김신예',
@@ -59,18 +93,25 @@ const translations = {
     profileName: profile.nameKo,
     company: profile.companyKo,
     tenure: profile.tenureKo,
-    heroEyebrow: 'B2B 업무 화면과 MES 프로젝트 경험',
-    heroRole: '실무형 B2B 프론트엔드 개발자',
+    heroEyebrow: 'MES · B2B Frontend',
+    heroRole: 'B2B 프론트엔드 개발자',
     heroText:
-      'MES, POP 등 제조업 중심 프로젝트에서 그리드, 폼, 팝업, 콤보박스, API 연동 기반의 업무 화면을 개발했습니다. 화려함보다 요구사항을 정확하게 화면에 반영하고, 이슈를 끝까지 추적하는 개발 경험을 강점으로 합니다.',
+      '제조업 MES 프로젝트에서 그리드, 폼, 팝업, API 연동 중심의 업무 화면을 개발하고, 사내 UI 프레임워크 운영과 가이드·교육을 함께 수행하고 있습니다.',
     current: 'Current',
     tenureLabel: 'Tenure',
     emailLabel: 'Email',
     primaryAction: '대표 프로젝트 보기',
     secondaryAction: '연락하기',
-    aboutTitle: '프레임워크 환경에 맞춰 업무 화면을 완성하는 개발자',
+    aboutTitle: '실무에 강한 프론트엔드 개발자',
+    aboutKicker: 'Frontend Focus',
+    aboutLead: '요구사항을 안정적인 업무 화면으로 연결합니다',
     aboutText:
-      'Vue.js와 JavaScript 기반의 B2B 업무 시스템 프론트엔드 개발 경험을 보유하고 있습니다. 제조업 중심 프로젝트에서 데이터 조회, 저장, 삭제, 유효성 검사, 팝업, 콤보박스, API 연동 흐름을 구현해 왔습니다.',
+      'B2B 업무 시스템에서 사용자가 매일 쓰는 화면의 흐름과 완성도를 중요하게 봅니다. 프로젝트 화면 개발 경험과 사내 UI 프레임워크 운영 경험을 바탕으로, 팀이 일관된 방식으로 화면을 만들 수 있는 환경까지 함께 개선해 왔습니다.',
+    aboutMetrics: [
+      ['6건+', '구축·개발 프로젝트 수행'],
+      ['90%+', '사내 UI 가이드 작성 기여'],
+      ['약 10회', '사내·고객사 개발자 교육']
+    ],
     labels: {
       name: '이름',
       phone: '연락처',
@@ -82,82 +123,144 @@ const translations = {
       tenure: '재직 기간'
     },
     strengths: [
-      'Vue.js / JavaScript 기반 업무 화면 개발',
-      'MES, POP 등 제조업 중심 B2B 시스템 경험',
-      '그리드 중심 CRUD, 유효성 검사, 팝업, 콤보박스 처리',
-      '사내 UI 프레임워크 개발, 운영, 이슈 대응',
-      'UI 가이드 문서 90% 이상 작성, 매주 정기 배포, 개발자 교육 약 10회'
+      'Vue 3 기반 MES·B2B 업무 시스템 개발',
+      '사내 UI 프레임워크 및 공통 컴포넌트 운영·개선',
+      'AUIGrid 기반 데이터 관리 화면과 동적 그리드 개발',
+      'UI Builder 및 메타데이터 기반 화면 구성 기능 개선',
+      '개발 가이드 작성, 개발자 교육, 프로젝트 UI 이슈 해결'
     ],
-    strengthKicker: 'Core Work Patterns',
+    coreWorksTitle: '핵심 업무',
+    coreWorks: [
+      {
+        icon: 'UI',
+        title: 'MES 업무 화면',
+        text: '그리드, 공정 화면, 리포트, 바코드 입력 UI 구현'
+      },
+      {
+        icon: 'FW',
+        title: 'UI 프레임워크',
+        text: '공통 컴포넌트와 Core 패키지 운영·개선'
+      },
+      {
+        icon: 'BD',
+        title: 'UI Builder',
+        text: '메타데이터 기반 화면 구성과 빌더 기능 유지보수'
+      },
+      {
+        icon: 'GD',
+        title: '가이드·교육',
+        text: 'VitePress 문서 작성, 개발자 교육, 프로젝트 이슈 지원'
+      }
+    ],
+    strengthKicker: 'Core Work',
     strengthTitle: '업무 화면 개발 강점',
     snapshotTitle: '현재 핵심 업무',
     snapshotName: 'WEBUI 2.0 사내 UI 프레임워크',
     snapshotText:
-      'Vue.js 기반 차세대 사내 UI 프레임워크를 개발/운영하며, 업무 화면 개발 패턴을 표준화하고 프로젝트 적용 이슈를 대응하고 있습니다.',
+      '공통 컴포넌트, Core 패키지, UI Builder, 개발 가이드를 운영하며 여러 프로젝트가 안정적으로 사용할 수 있는 UI 개발 환경을 개선하고 있습니다.',
     snapshotItems: [
-      ['문서화', 'UI 가이드 문서 90% 이상 작성'],
-      ['배포', '매주 정기 배포 수행'],
-      ['빌더', 'Electron.js 기반 빌더 관리'],
-      ['교육', '사내/고객사 개발자 교육 약 10회']
+      ['화면', 'MES 업무 화면 90개 이상 개발'],
+      ['Builder', 'UI Builder 약 1년 운영·개선'],
+      ['Guide', 'VitePress 기반 개발 가이드 작성'],
+      ['Award', '2026년 상반기 우수사원 선정']
     ],
-    skillsTitle: '업무 화면 개발에 필요한 기술을 목적별로 사용합니다',
+    skillsTitle: '기술 스택',
     skillGroups: [
-      { title: 'Frontend', items: ['HTML', 'CSS', 'JavaScript', 'jQuery', 'Vue.js'] },
-      {
-        title: 'UI Library / Component',
-        items: ['AUIGrid', 'Element Plus', 'Tabulator', 'ECharts', 'jqxSplitter', 'jqxComboBox']
-      },
-      { title: 'Runtime / Tool', items: ['Node.js', 'Electron.js', '사내 npm 패키지 관리'] },
+      { title: 'Language', items: ['JavaScript', 'HTML', 'CSS', 'SCSS'] },
+      { title: 'Framework', items: ['Vue.js', 'Vite', 'Pinia', 'Vue Router', 'jQuery'] },
+      { title: 'UI / Chart', items: ['AUIGrid', 'Element Plus', 'ECharts'] },
+      { title: 'Tool', items: ['Node.js', 'Electron.js', 'VitePress', 'Git', 'SVN', 'DBeaver', 'VSCode'] },
       {
         title: 'Database',
         note: '데이터 확인 및 기본 조회 쿼리 작성 용도',
         items: ['MSSQL', 'Oracle', 'PostgreSQL']
-      },
-      {
-        title: 'Currently Learning',
-        items: ['TypeScript', 'Flutter', 'Java / Spring', 'API / HTTP 기본 구조']
-      },
-      {
-        title: 'Certification',
-        items: ['SQLD (2023.04.14)', '컴퓨터활용능력 1급 (2022.05.13)', '정보처리기사 (2026.09.11 취득 예정)']
       }
     ],
-    projectsTitle: '문제, 역할, 해결, 성과 중심의 대표 프로젝트',
-    projectLabels: ['문제', '역할', '해결', '성과'],
+    projectsTitle: '대표 프로젝트',
+    projectLabels: ['개요', '역할', '기여'],
+    projectModalLabel: '자세히 보기',
+    closeLabel: '닫기',
     projects: [
       {
-        name: '에너지머티리얼즈 MES 구축',
-        period: '2023.11.15 ~ 2024.08.31',
-        stack: 'WEBUI 1.0, JavaScript, MSSQL, Git, DBeaver, VSCode',
-        problem: '배터리 재활용 MES 구축 과정에서 현장 데이터 조회, 입력, 저장 흐름을 안정적인 업무 화면으로 구현해야 했습니다.',
-        role: '개발 / 사원으로 참여해 UI 개발을 100% 담당했습니다.',
-        solution: 'WEBUI 1.0 기반으로 그리드, 폼, 팝업, 검색 조건, 저장 전 유효성 검사, API 연동 화면을 구현했습니다.',
-        result: '제조 현장 업무 흐름에 맞는 MES 화면을 구축하고, 프로젝트 기간 동안 화면 이슈와 변경 요청에 대응했습니다.'
+        icon: 'framework',
+        category: 'Internal Platform',
+        status: '진행 중',
+        name: 'WEBUI 2.0 사내 UI 프레임워크 및 UI Builder',
+        period: '2024.09 ~ 현재',
+        stack: 'Vue 3, UI Framework, UI Builder, VitePress, Electron.js',
+        summary: '사내 UI 프레임워크와 UI Builder를 운영·개선하며 공통 UI 개발 환경을 관리하고 있습니다.',
+        detail: {
+          overview: 'Vue 3 기반 B2B 업무 시스템 개발에 사용되는 사내 UI 프레임워크와 UI Builder를 운영하고 개선하는 프로젝트입니다.',
+          role: [
+            'Core 패키지와 표준 UI 프로젝트의 분리 구조 관리',
+            '공통 컴포넌트 기능 개선 및 오류 수정',
+            'UI Builder 기능 추가, 구조 개선 및 유지보수',
+            'VitePress 기반 UI 개발 가이드 작성 및 교육'
+          ],
+          contribution: [
+            '대형 모니터 공정 화면을 위한 폰트 크기, 다크 모드, 화면 확장 기능 개선',
+            'keep-alive와 메뉴 상태 저장·복원 로직으로 화면 전환 안정성 개선',
+            '프로젝트 요구사항을 개별 화면이 아닌 공통 프레임워크 기능으로 확장',
+            '약 1년간 UI Builder 기능 추가, 오류 수정, 테스트 및 프로젝트 이슈 대응'
+          ]
+        }
       },
       {
-        name: 'LS Electric G2 MES 구축',
-        period: '2025.06.20 ~ 2025.10.31',
-        stack: 'WEBUI 1.0, JavaScript, MSSQL, Git, DBeaver, VSCode',
-        problem: 'LS Electric G2 MES 구축에서 프로젝트 표준과 업무 요구사항을 동시에 만족하는 화면 개발이 필요했습니다.',
-        role: '개발 / 주임으로 참여해 UI 개발을 100% 담당했습니다.',
-        solution: '조회 조건, 그리드, 폼, 사용자 메시지, API 연동 흐름을 WEBUI 1.0 기준에 맞춰 구현했습니다.',
-        result: 'MES 업무 화면의 일관된 개발 패턴을 유지하면서 기능 수정과 화면 개선 요청에 대응했습니다.'
+        icon: 'manufacturing',
+        category: 'Manufacturing MES',
+        status: '구축 완료',
+        name: 'G2 MES 구축',
+        period: '2025.06 ~ 2025.10',
+        stack: 'WEBUI 1.0, JavaScript, AUIGrid, MSSQL, LPS/ZPL',
+        summary: '공정 화면, 동적 그리드, 바코드 입력, 라벨 출력 연동을 구현했습니다.',
+        detail: {
+          overview: '제조업 MES 구축 프로젝트에서 공정 화면 중심의 복잡한 UI와 대량 데이터 입력 흐름을 구현했습니다.',
+          role: [
+            '약 40개 규모의 MES 업무 화면 개발',
+            '조건에 따라 변경되는 동적 그리드 구성',
+            '엑셀 Copy & Paste 기반 대량 데이터 입력 처리',
+            '바코드 스캔 및 LPS/ZPL 라벨 출력 연동 흐름 분석'
+          ],
+          contribution: [
+            '빠른 연속 바코드 입력 시 일부 데이터가 누락되는 문제 분석',
+            'Key 이벤트와 콜백 처리 타이밍 차이를 확인하고 순차 반영 방식으로 개선',
+            '처리 상태를 확인할 수 있도록 로딩 UI 적용',
+            '라벨 출력 데이터 전달 흐름 분석 및 관련 화면 수정 지원'
+          ]
+        }
       },
       {
-        name: 'WEBUI 2.0 사내 UI 프레임워크 개발',
-        period: '2024.09.23 ~ 현재',
-        stack: 'WEBUI 2.0, Vue.js, MSSQL, Git, VSCode',
-        problem: '프로젝트별로 반복되는 MES 화면 개발 패턴을 표준화하고, 내부 개발자가 일관된 방식으로 화면을 구현할 수 있는 차세대 UI 프레임워크가 필요했습니다.',
-        role: '개발 / 주임으로 참여해 Vue.js 기반 사내 UI 프레임워크 화면 개발, 공통 컴포넌트 사용 흐름 정리, 개발 가이드 및 문의 대응을 수행하고 있습니다.',
-        solution: '그리드, 폼, 검색 조건, 팝업, API 연동 등 B2B 업무 화면에서 반복되는 UI 패턴을 프레임워크 구조에 맞게 정리하고, 프로젝트 적용 시 발생하는 이슈와 개선 요청을 반영했습니다.',
-        result: '실제 MES 프로젝트 경험을 바탕으로 사내 UI 프레임워크의 사용성과 화면 개발 생산성을 높이는 데 기여하고 있으며, 현재도 최신 업무로 지속 수행 중입니다.'
+        icon: 'recycle',
+        category: 'MES & Operations',
+        status: '구축·운영',
+        name: '에너지머티리얼즈 MES 구축 및 유지보수',
+        period: '2023.11 ~ 2024.08',
+        stack: 'WEBUI 1.0, JavaScript, AUIGrid, MSSQL',
+        summary: '그리드·리포트성 업무 화면을 개발하고 약 6개월간 운영 이슈를 대응했습니다.',
+        detail: {
+          overview: '배터리 재활용 MES 시스템 구축 프로젝트에서 프론트엔드 화면 개발과 운영 유지보수를 담당했습니다.',
+          role: [
+            '약 30개 데이터 관리 및 리포트성 화면 개발',
+            '검색 조건, 콤보박스, 팝업, 버튼 이벤트 구현',
+            '저장 전 필수값 및 데이터 유효성 검사 처리',
+            'REST API 연동 및 MSSQL 데이터 확인'
+          ],
+          contribution: [
+            '운영 중 발생한 UI 오류와 데이터 표시 문제 분석 및 수정',
+            'AUIGrid 기반 조회, 동적 컬럼, 저장·수정·삭제 흐름 구현',
+            '반복 화면 이슈의 원인을 분석하고 유사 화면에 공통 대응 방식 적용',
+            '장기간 유지보수로 실제 사용자 요청 기반 운영 대응 경험 확보'
+          ]
+        }
       }
     ],
     experienceTitle: '프로젝트 참여 이력',
-    careerSummary: 'B2B 업무 시스템 화면 개발과 사내 UI 프레임워크 운영, 가이드, 교육 지원을 함께 수행하고 있습니다.',
+    awardLabel: 'Recognition',
+    awardTitle: '2026년 상반기 우수사원',
+    careerSummary: '6건의 구축·개발 프로젝트를 수행했으며, 사내 UI 프레임워크 운영과 차기 프로젝트 준비를 병행하고 있습니다.',
     experienceSubTitle: '업무 경험',
-    experienceCountLabel: '핵심 경력',
-    experienceAction: '주요 업무 내용',
+    experienceCountLabel: '프로젝트',
+    experienceAction: '업무 보기',
     experienceCards: [
       {
         period: '2026.08 ~ 2026.11 예정',
@@ -168,20 +271,44 @@ const translations = {
         bullets: ['JavaScript 기반 업무 화면 개발', '그리드/폼/팝업/API 연동 화면 구현', '프로젝트 표준에 맞춘 UI 개발 대응']
       },
       {
-        period: '2024.09.23 ~ 현재',
-        company: 'WEBUI 2.0',
-        role: '개발 / 주임',
-        title: 'Vue.js 기반 사내 UI 프레임워크 개발 및 운영',
-        summary: '차세대 사내 UI 프레임워크를 개발/운영하며 공통 화면 패턴, 가이드, 배포, 빌더, 교육 업무를 함께 수행하고 있습니다.',
-        bullets: ['UI 가이드 문서 90% 이상 작성', '매주 정기 배포 수행', 'Electron.js 기반 컴포넌트 등록용 빌더 관리', '사내/고객사 개발자 교육 약 10회 진행']
-      },
-      {
         period: '2025.06.20 ~ 2025.10.31',
         company: 'LS Electric G2 MES 구축',
         role: '개발 / 주임',
         title: 'MES 업무 화면 개발 및 이슈 대응',
-        summary: 'WEBUI 1.0 프로젝트 표준에 맞춰 조회 조건, 그리드, 폼, 사용자 메시지, API 연동 흐름을 구현했습니다.',
-        bullets: ['UI 개발 100%', 'JavaScript/MSSQL 기반 화면 개발', '기능 수정 및 화면 개선 요청 대응']
+        summary: '공정 화면과 대량 데이터 입력 흐름을 포함한 약 40개 업무 화면을 개발했습니다.',
+        bullets: ['동적 그리드와 엑셀 Copy & Paste 입력 구현', '바코드 연속 입력 누락 이슈 분석 및 처리 흐름 개선', 'LPS/ZPL 라벨 출력 연동 화면 지원']
+      },
+      {
+        period: '2025.05.22 ~ 2025.07.30',
+        company: '이녹스리튬 MES 구축',
+        role: '개발 / 주임',
+        title: '리튬 생산 MES 업무 화면 개발',
+        summary: 'WEBUI 1.0 표준에 맞춰 데이터 조회, 입력, 저장 중심의 MES 화면을 구현했습니다.',
+        bullets: ['JavaScript와 AUIGrid 기반 UI 개발', '그리드 CRUD, 폼 유효성 검사, API 연동', 'MSSQL 데이터 확인 및 프로젝트 이슈 대응']
+      },
+      {
+        period: '2024.09.23 ~ 현재',
+        company: 'WEBUI 2.0',
+        role: '개발 / 주임',
+        title: 'Vue 3 기반 사내 UI 프레임워크 개발 및 운영',
+        summary: '차세대 UI 프레임워크, 공통 컴포넌트, 가이드, 정기 배포, Builder를 운영하고 있습니다.',
+        bullets: ['UI 가이드 문서 90% 이상 작성', '매주 정기 배포 및 프로젝트 적용 이슈 대응', 'Electron.js Builder 관리와 개발자 교육 약 10회 진행']
+      },
+      {
+        period: '2024.06.17 ~ 2024.12.12',
+        company: '에너테크 MES 개발',
+        role: '개발 / 사원',
+        title: '배터리 MES 시스템 UI 개발',
+        summary: '러시아 Kaliningrad·Moscow 사업장 대상 배터리 MES 업무 화면을 개발했습니다.',
+        bullets: ['WEBUI 1.0과 JavaScript 기반 UI 개발', 'PostgreSQL 데이터 확인 및 API 연동', '그리드·폼·팝업 중심 업무 기능 구현']
+      },
+      {
+        period: '2024.05.08 ~ 2024.06.05',
+        company: '코마테크 MES 구축',
+        role: '개발 / 사원',
+        title: 'MES 업무 화면 개발 지원',
+        summary: '단기 구축 일정에 맞춰 WEBUI 1.0 기반 MES 화면 개발과 기능 수정을 수행했습니다.',
+        bullets: ['JavaScript 기반 UI 개발', 'Oracle 데이터 확인과 화면 연동', '프로젝트 표준에 맞춘 그리드·폼 기능 구현']
       },
       {
         period: '2023.11.15 ~ 2024.08.31',
@@ -203,8 +330,8 @@ const translations = {
       ['LS Electric G2 MES 구축', '2025.06.20 ~ 2025.10.31', '개발 / 주임', 'WEBUI 1.0, JavaScript, MSSQL 기반 UI 개발 100%'],
       ['대한항공 MES 프로젝트', '2026.08 ~ 2026.11 예정', '개발 / 주임', 'WEBUI 1.0, JavaScript 기반 UI 개발 예정']
     ],
-    frameworkTitle: '사내 UI 프레임워크 운영과 교육 경험',
-    frameworkSubTitle: '공통된 개발 방식을 만드는 경험',
+    frameworkTitle: '사내 UI 프레임워크 경험',
+    frameworkSubTitle: '공통 UI 개발 환경을 운영하고 개선했습니다',
     frameworkText:
       'Vue.js 기반 WEBUI 2.0 사내 UI 프레임워크 개발에 참여하고 있으며, MES 프로젝트에서 반복되는 그리드, 폼, 팝업, API 연동 화면 패턴을 공통화하고 내부 개발자가 일관된 방식으로 사용할 수 있도록 가이드, 배포, 빌더 관리, 교육, 이슈 대응을 수행하고 있습니다.',
     frameworkStats: [
@@ -228,7 +355,7 @@ const translations = {
       '그리드 이벤트, 저장/삭제 흐름, 예외 처리, 사용자 메시지를 직접 검증 후 반영',
       '중복 로직을 코드 리뷰 관점에서 정리하고 공통화 가능 여부 검토'
     ],
-    aiToolsTitle: '사용해본 AI 개발 도구',
+    aiToolsTitle: '실제 개발 흐름에 사용한 도구',
     aiTools: ['Cursor', 'Codex', 'Antigravity'],
     contactTitle: '업무 화면의 완성도를 함께 높이고 싶습니다',
     contactText:
@@ -246,18 +373,25 @@ const translations = {
     profileName: profile.nameEn,
     company: profile.companyEn,
     tenure: profile.tenureEn,
-    heroEyebrow: 'B2B Business Screens and MES Project Experience',
-    heroRole: 'Practical B2B Frontend Developer',
+    heroEyebrow: 'MES · B2B Frontend',
+    heroRole: 'B2B Frontend Developer',
     heroText:
-      'I build enterprise work screens for manufacturing-centered MES and POP projects, focusing on grids, forms, popups, combo boxes, validation, and API integration. My strength is translating requirements into stable UI behavior within real project constraints.',
+      'I build grid, form, popup, and API-connected business screens for manufacturing MES projects while operating internal UI framework guides and training.',
     current: 'Current',
     tenureLabel: 'Tenure',
     emailLabel: 'Email',
     primaryAction: 'View Projects',
     secondaryAction: 'Contact',
-    aboutTitle: 'A developer who completes business screens within framework constraints',
+    aboutTitle: 'A practical frontend developer',
+    aboutKicker: 'Frontend Focus',
+    aboutLead: 'Connecting requirements to reliable business screens',
     aboutText:
-      'I have frontend development experience with Vue.js and JavaScript for B2B enterprise systems. In manufacturing projects, I implemented data search, save, delete, validation, popup, combo box, and API integration workflows.',
+      'I focus on the flow and completeness of business screens used every day in B2B systems. Along with project screen development, I have improved shared UI development practices through internal framework operations, guides, and training.',
+    aboutMetrics: [
+      ['6+', 'Implementation and development projects'],
+      ['90%+', 'Contribution to internal UI guides'],
+      ['About 10', 'Internal and client training sessions']
+    ],
     labels: {
       name: 'Name',
       phone: 'Phone',
@@ -269,83 +403,145 @@ const translations = {
       tenure: 'Tenure'
     },
     strengths: [
-      'Business screen development with Vue.js / JavaScript',
-      'MES, POP, and manufacturing-centered B2B system experience',
-      'Grid-based CRUD, validation, popup, and combo box handling',
-      'Internal UI framework development, operation, and issue response',
-      '90%+ UI guide documentation, weekly releases, and about 10 training sessions'
+      'Vue 3-based MES and B2B business system development',
+      'Internal UI framework and common component operation',
+      'AUIGrid-based data screens and dynamic grids',
+      'UI Builder and metadata-driven UI improvement',
+      'Developer guides, training, and project UI issue support'
     ],
-    strengthKicker: 'Core Work Patterns',
+    coreWorksTitle: 'Core Work',
+    coreWorks: [
+      {
+        icon: 'UI',
+        title: 'MES Business Screens',
+        text: 'Grids, process screens, reports, barcode input UI'
+      },
+      {
+        icon: 'FW',
+        title: 'UI Framework',
+        text: 'Common components and Core package operation'
+      },
+      {
+        icon: 'BD',
+        title: 'UI Builder',
+        text: 'Metadata-driven screen builder maintenance'
+      },
+      {
+        icon: 'GD',
+        title: 'Guides & Training',
+        text: 'VitePress guides, developer training, project support'
+      }
+    ],
+    strengthKicker: 'Core Work',
     strengthTitle: 'Business Screen Development Strengths',
     snapshotTitle: 'Current Focus',
     snapshotName: 'WEBUI 2.0 Internal UI Framework',
     snapshotText:
-      'I develop and operate a Vue.js-based next-generation internal UI framework, standardizing business screen patterns and supporting project adoption issues.',
+      'I operate common components, Core packages, UI Builder, and development guides to improve a stable UI development environment across projects.',
     snapshotItems: [
-      ['Docs', 'Created over 90% of UI guide documentation'],
-      ['Release', 'Handle weekly regular releases'],
-      ['Builder', 'Manage Electron.js-based builder'],
-      ['Training', 'Delivered about 10 developer training sessions']
+      ['Screens', '90+ MES business screens'],
+      ['Builder', '1 year of UI Builder maintenance'],
+      ['Guide', 'VitePress development guides'],
+      ['Award', '2026 first-half outstanding employee']
     ],
-    skillsTitle: 'I use technologies by purpose for enterprise UI development',
+    skillsTitle: 'Tech Stack',
     skillGroups: [
-      { title: 'Frontend', items: ['HTML', 'CSS', 'JavaScript', 'jQuery', 'Vue.js'] },
-      {
-        title: 'UI Library / Component',
-        items: ['AUIGrid', 'Element Plus', 'Tabulator', 'ECharts', 'jqxSplitter', 'jqxComboBox']
-      },
-      { title: 'Runtime / Tool', items: ['Node.js', 'Electron.js', 'Internal npm package management'] },
+      { title: 'Language', items: ['JavaScript', 'HTML', 'CSS', 'SCSS'] },
+      { title: 'Framework', items: ['Vue.js', 'Vite', 'Pinia', 'Vue Router', 'jQuery'] },
+      { title: 'UI / Chart', items: ['AUIGrid', 'Element Plus', 'ECharts'] },
+      { title: 'Tool', items: ['Node.js', 'Electron.js', 'VitePress', 'Git', 'SVN', 'DBeaver', 'VSCode'] },
       {
         title: 'Database',
         note: 'Used for data checks and basic SELECT queries',
         items: ['MSSQL', 'Oracle', 'PostgreSQL']
-      },
-      {
-        title: 'Currently Learning',
-        items: ['TypeScript', 'Flutter', 'Java / Spring', 'API / HTTP basics']
-      },
-      {
-        title: 'Certification',
-        items: ['SQLD (Apr 14, 2023)', 'Computer Specialist in Spreadsheet & Database Level 1 (May 13, 2022)', 'Engineer Information Processing (Expected Sep 11, 2026)']
       }
     ],
-    projectsTitle: 'Selected projects structured by problem, role, solution, and impact',
-    projectLabels: ['Problem', 'Role', 'Solution', 'Impact'],
+    projectsTitle: 'Representative Projects',
+    projectLabels: ['Overview', 'Role', 'Contribution'],
+    projectModalLabel: 'View Details',
+    closeLabel: 'Close',
     projects: [
       {
-        name: 'Energy Materials MES Implementation',
-        period: 'Nov 15, 2023 ~ Aug 31, 2024',
-        stack: 'WEBUI 1.0, JavaScript, MSSQL, Git, DBeaver, VSCode',
-        problem: 'The battery recycling MES project required stable UI screens for manufacturing data search, input, and save workflows.',
-        role: 'Participated as developer / staff and handled 100% of UI development.',
-        solution: 'Implemented grids, forms, popups, search conditions, pre-save validation, and API-connected screens based on WEBUI 1.0.',
-        result: 'Delivered MES screens aligned with manufacturing workflows and responded to UI issues and requirement changes during the project.'
+        icon: 'framework',
+        category: 'Internal Platform',
+        status: 'Ongoing',
+        name: 'WEBUI 2.0 Internal UI Framework and UI Builder',
+        period: 'Sep 2024 ~ Present',
+        stack: 'Vue 3, UI Framework, UI Builder, VitePress, Electron.js',
+        summary: 'Operate and improve the internal UI framework and UI Builder used for B2B business systems.',
+        detail: {
+          overview: 'An internal Vue 3-based UI framework and UI Builder project used across B2B business systems.',
+          role: [
+            'Manage Core package and standard UI project separation',
+            'Improve common components and fix framework issues',
+            'Maintain UI Builder features and structure',
+            'Write VitePress guides and train developers'
+          ],
+          contribution: [
+            'Improved font-size, dark mode, and screen expansion features for large process monitors',
+            'Applied keep-alive and menu state restore logic for stable screen transitions',
+            'Converted project requirements into reusable framework features',
+            'Maintained UI Builder features, tests, and project issue response for about one year'
+          ]
+        }
       },
       {
-        name: 'LS Electric G2 MES Implementation',
-        period: 'Jun 20, 2025 ~ Oct 31, 2025',
-        stack: 'WEBUI 1.0, JavaScript, MSSQL, Git, DBeaver, VSCode',
-        problem: 'The LS Electric G2 MES project required UI screens that satisfied both project standards and business requirements.',
-        role: 'Participated as developer / assistant manager and handled 100% of UI development.',
-        solution: 'Implemented search conditions, grids, forms, user messages, and API integration flows according to WEBUI 1.0 standards.',
-        result: 'Maintained consistent MES screen development patterns while responding to feature changes and screen improvement requests.'
+        icon: 'manufacturing',
+        category: 'Manufacturing MES',
+        status: 'Completed',
+        name: 'G2 MES Implementation',
+        period: 'Jun 2025 ~ Oct 2025',
+        stack: 'WEBUI 1.0, JavaScript, AUIGrid, MSSQL, LPS/ZPL',
+        summary: 'Built about 40 MES screens including process screens, dynamic grids, barcode input, and label printing integration.',
+        detail: {
+          overview: 'A manufacturing MES project focused on process screens and high-volume input workflows.',
+          role: [
+            'Developed about 40 MES business screens',
+            'Built dynamic grids based on business conditions',
+            'Handled Excel copy/paste bulk input',
+            'Analyzed barcode scanning and LPS/ZPL label-printing flows'
+          ],
+          contribution: [
+            'Analyzed missing data issues during rapid barcode input',
+            'Improved timing between key events and callback processing',
+            'Added loading UI to show processing state',
+            'Supported label-printing data flow analysis and UI fixes'
+          ]
+        }
       },
       {
-        name: 'WEBUI 2.0 Internal UI Framework',
-        period: 'Sep 23, 2024 ~ Present',
-        stack: 'WEBUI 2.0, Vue.js, MSSQL, Git, VSCode',
-        problem: 'Repeated MES screen development patterns needed to be standardized so internal developers could build screens consistently across projects.',
-        role: 'Participating as developer / assistant manager, working on Vue.js-based internal UI framework screens, common component usage flows, development guides, and project inquiries.',
-        solution: 'Structured repeated B2B UI patterns such as grids, forms, search conditions, popups, and API integration around the framework architecture, then reflected project issues and improvement requests.',
-        result: 'Contributing to better usability and productivity of the internal UI framework based on real MES project experience. This is the latest ongoing work.'
+        icon: 'recycle',
+        category: 'MES & Operations',
+        status: 'Built & Maintained',
+        name: 'Energy Materials MES Implementation and Maintenance',
+        period: 'Nov 2023 ~ Aug 2024',
+        stack: 'WEBUI 1.0, JavaScript, AUIGrid, MSSQL',
+        summary: 'Developed about 30 grid/report screens and handled operational UI issues for about six months.',
+        detail: {
+          overview: 'A battery recycling MES project where I handled frontend screen development and maintenance.',
+          role: [
+            'Developed about 30 data management and report screens',
+            'Implemented search conditions, combo boxes, popups, and button events',
+            'Handled required-field and validation logic before save',
+            'Integrated REST APIs and checked MSSQL data'
+          ],
+          contribution: [
+            'Analyzed and fixed UI errors and data display issues during operation',
+            'Built AUIGrid search, dynamic columns, save/update/delete flows',
+            'Applied common fixes to similar repeated screen issues',
+            'Gained hands-on maintenance experience from real user requests'
+          ]
+        }
       }
     ],
     experienceTitle: 'Project Experience',
+    awardLabel: 'Recognition',
+    awardTitle: 'Outstanding Employee, First Half of 2026',
     careerSummary:
-      'I work on B2B business system screens while supporting internal UI framework operation, guides, and developer training.',
+      'I have contributed to six implementation and development projects while maintaining the internal UI framework and preparing for the next assignment.',
     experienceSubTitle: 'Work Experience',
-    experienceCountLabel: 'Focused Entries',
-    experienceAction: 'Main Responsibilities',
+    experienceCountLabel: 'Projects',
+    experienceAction: 'View Work',
     experienceCards: [
       {
         period: 'Aug 2026 ~ Nov 2026 Scheduled',
@@ -356,20 +552,44 @@ const translations = {
         bullets: ['JavaScript-based business screen development', 'Grid/form/popup/API-connected UI implementation', 'UI development aligned with project standards']
       },
       {
-        period: 'Sep 23, 2024 ~ Present',
-        company: 'WEBUI 2.0',
-        role: 'Developer / Assistant Manager',
-        title: 'Vue.js-based internal UI framework development and operation',
-        summary: 'Developing and operating the next-generation internal UI framework while handling common UI patterns, guides, releases, builder maintenance, and training.',
-        bullets: ['Created over 90% of UI guide documentation', 'Handle weekly regular releases', 'Manage the Electron.js component registration builder', 'Delivered about 10 internal/client developer training sessions']
-      },
-      {
         period: 'Jun 20, 2025 ~ Oct 31, 2025',
         company: 'LS Electric G2 MES Implementation',
         role: 'Developer / Assistant Manager',
-        title: 'MES business screen development and issue response',
-        summary: 'Implemented search conditions, grids, forms, user messages, and API integration flows according to WEBUI 1.0 project standards.',
-        bullets: ['100% UI development responsibility', 'JavaScript/MSSQL-based screen development', 'Feature fixes and screen improvement requests']
+        title: 'MES business screen development and issue resolution',
+        summary: 'Delivered about 40 business screens, including process views and high-volume data-entry workflows.',
+        bullets: ['Built dynamic grids and Excel copy-and-paste input', 'Analyzed rapid barcode input loss and improved the processing flow', 'Supported LPS/ZPL label-printing integrations']
+      },
+      {
+        period: 'May 22, 2025 ~ Jul 30, 2025',
+        company: 'Inox Lithium MES Implementation',
+        role: 'Developer / Assistant Manager',
+        title: 'Lithium production MES screen development',
+        summary: 'Implemented MES screens for data search, entry, and save workflows using WEBUI 1.0 standards.',
+        bullets: ['Developed UI with JavaScript and AUIGrid', 'Implemented grid CRUD, form validation, and API integration', 'Checked MSSQL data and resolved project UI issues']
+      },
+      {
+        period: 'Sep 23, 2024 ~ Present',
+        company: 'WEBUI 2.0',
+        role: 'Developer / Assistant Manager',
+        title: 'Vue 3 internal UI framework development and operation',
+        summary: 'Maintain the next-generation UI framework, shared components, guides, weekly releases, and UI Builder.',
+        bullets: ['Authored over 90% of the UI guide documentation', 'Manage weekly releases and project adoption issues', 'Maintain the Electron.js Builder and delivered about 10 developer training sessions']
+      },
+      {
+        period: 'Jun 17, 2024 ~ Dec 12, 2024',
+        company: 'Enertech MES Development',
+        role: 'Developer / Staff',
+        title: 'Battery MES system UI development',
+        summary: 'Developed battery MES screens for the Kaliningrad and Moscow sites in Russia.',
+        bullets: ['Developed UI with WEBUI 1.0 and JavaScript', 'Checked PostgreSQL data and integrated APIs', 'Implemented grid, form, and popup-based workflows']
+      },
+      {
+        period: 'May 8, 2024 ~ Jun 5, 2024',
+        company: 'Comatech MES Implementation',
+        role: 'Developer / Staff',
+        title: 'MES business screen development support',
+        summary: 'Delivered WEBUI 1.0 screens and feature updates within a short implementation schedule.',
+        bullets: ['Developed business UI with JavaScript', 'Checked Oracle data and screen integrations', 'Implemented grid and form features to project standards']
       },
       {
         period: 'Nov 15, 2023 ~ Aug 31, 2024',
@@ -391,8 +611,8 @@ const translations = {
       ['LS Electric G2 MES Implementation', 'Jun 20, 2025 ~ Oct 31, 2025', 'Developer / Assistant Manager', 'WEBUI 1.0, JavaScript, MSSQL UI development 100%'],
       ['Korean Air MES Project', 'Aug 2026 ~ Nov 2026 Scheduled', 'Developer / Assistant Manager', 'WEBUI 1.0, JavaScript UI development scheduled']
     ],
-    frameworkTitle: 'Internal UI Framework, Guide, and Training',
-    frameworkSubTitle: 'Creating a shared way to build screens',
+    frameworkTitle: 'Internal UI Framework',
+    frameworkSubTitle: 'Operating and improving a shared UI development environment',
     frameworkText:
       'I am participating in the development of the Vue.js-based WEBUI 2.0 internal UI framework, standardizing repeated MES screen patterns such as grids, forms, popups, and API integration while handling guides, releases, builder maintenance, training, and project issue response.',
     frameworkStats: [
@@ -416,7 +636,7 @@ const translations = {
       'Verify grid events, save/delete flows, exception handling, and user messages directly',
       'Review duplicated logic and evaluate opportunities for commonization'
     ],
-    aiToolsTitle: 'AI development tools used',
+    aiToolsTitle: 'Tools used in development workflows',
     aiTools: ['Cursor', 'Codex', 'Antigravity'],
     contactTitle: 'I want to improve the completeness of business screens',
     contactText:
@@ -523,20 +743,11 @@ onUnmounted(() => {
               <dd>{{ profile.email }}</dd>
             </div>
           </dl>
-          <div class="mes-status-board" aria-label="MES process status">
-            <span>MES</span>
-            <span>LOT TRACKING</span>
-            <span>GRID CRUD</span>
-            <span>API SYNC</span>
-          </div>
           <div class="hero-actions">
             <a class="primary-action" href="#projects">{{ copy.primaryAction }}</a>
             <a class="secondary-action" href="#contact">{{ copy.secondaryAction }}</a>
           </div>
         </div>
-        <figure class="hero-visual reveal">
-          <img :src="`${baseUrl}b2b-dashboard-hero.png`" alt="B2B 업무 시스템 대시보드 목업" />
-        </figure>
       </section>
 
       <section id="about" class="section">
@@ -544,43 +755,36 @@ onUnmounted(() => {
           <p class="eyebrow">About</p>
           <h2>{{ copy.aboutTitle }}</h2>
         </div>
-        <div class="about-layout">
-          <div class="about-copy reveal">
+        <div class="about-intro reveal">
+          <div class="about-lead-block">
+            <span>{{ copy.aboutKicker }}</span>
+            <strong>{{ copy.aboutLead }}</strong>
+          </div>
+          <div class="about-message">
             <p>{{ copy.aboutText }}</p>
-            <dl class="profile-list">
-              <div><dt>{{ copy.labels.name }}</dt><dd>{{ copy.profileName }}</dd></div>
-              <div><dt>{{ copy.labels.phone }}</dt><dd>{{ profile.phone }}</dd></div>
-              <div><dt>{{ copy.labels.position }}</dt><dd>{{ language === 'ko' ? profile.positionKo : profile.positionEn }}</dd></div>
-              <div><dt>{{ copy.labels.department }}</dt><dd>{{ language === 'ko' ? profile.departmentKo : profile.departmentEn }}</dd></div>
-              <div><dt>{{ copy.labels.education }}</dt><dd>{{ language === 'ko' ? profile.educationKo : profile.educationEn }}</dd></div>
-              <div><dt>{{ copy.labels.techCategory }}</dt><dd>{{ language === 'ko' ? profile.techCategoryKo : profile.techCategoryEn }}</dd></div>
-              <div><dt>{{ copy.labels.company }}</dt><dd>{{ copy.company }}</dd></div>
-              <div><dt>{{ copy.labels.tenure }}</dt><dd>{{ copy.tenure }}</dd></div>
-            </dl>
           </div>
-          <aside class="about-snapshot reveal">
-            <span>{{ copy.snapshotTitle }}</span>
-            <strong>{{ copy.snapshotName }}</strong>
-            <p>{{ copy.snapshotText }}</p>
-            <dl>
-              <div v-for="item in copy.snapshotItems" :key="item[0]">
-                <dt>{{ item[0] }}</dt>
-                <dd>{{ item[1] }}</dd>
-              </div>
-            </dl>
-          </aside>
         </div>
-        <div class="strength-panel reveal">
-          <div class="strength-panel-head">
-            <span>{{ copy.strengthKicker }}</span>
-            <strong>{{ copy.strengthTitle }}</strong>
+        <div class="about-proof reveal" aria-label="About highlights">
+          <div v-for="(item, index) in copy.aboutMetrics" :key="item[0]">
+            <component :is="aboutMetricIcons[index]" :size="19" :stroke-width="1.8" aria-hidden="true" />
+            <strong>{{ item[0] }}</strong>
+            <span>{{ item[1] }}</span>
           </div>
-          <ul class="check-list strength-list">
-            <li v-for="(item, index) in copy.strengths" :key="item" class="reveal">
-              <span class="strength-index">{{ String(index + 1).padStart(2, '0') }}</span>
-              <span>{{ item }}</span>
-            </li>
-          </ul>
+        </div>
+        <div class="core-work-section reveal">
+          <div class="core-work-head">
+            <span>{{ copy.strengthKicker }}</span>
+            <strong>{{ copy.coreWorksTitle }}</strong>
+          </div>
+          <div class="core-work-grid">
+            <article v-for="item in copy.coreWorks" :key="item.title" class="core-work-card">
+              <span class="work-icon" aria-hidden="true">
+                <component :is="workIcons[item.icon]" :size="24" :stroke-width="1.8" />
+              </span>
+              <h3>{{ item.title }}</h3>
+              <p>{{ item.text }}</p>
+            </article>
+          </div>
         </div>
       </section>
 
@@ -614,6 +818,15 @@ onUnmounted(() => {
         </div>
         <div class="project-list">
           <article v-for="project in copy.projects" :key="project.name" class="project-card reveal">
+            <div class="project-visual">
+              <span class="project-icon" aria-hidden="true">
+                <component :is="projectIcons[project.icon]" :size="28" :stroke-width="1.7" />
+              </span>
+              <div>
+                <small>{{ project.category }}</small>
+                <strong>{{ project.status }}</strong>
+              </div>
+            </div>
             <div class="project-top">
               <div>
                 <h3>{{ project.name }}</h3>
@@ -621,12 +834,11 @@ onUnmounted(() => {
               </div>
               <span>{{ project.stack }}</span>
             </div>
-            <div class="project-detail">
-              <div><strong>{{ copy.projectLabels[0] }}</strong><p>{{ project.problem }}</p></div>
-              <div><strong>{{ copy.projectLabels[1] }}</strong><p>{{ project.role }}</p></div>
-              <div><strong>{{ copy.projectLabels[2] }}</strong><p>{{ project.solution }}</p></div>
-              <div><strong>{{ copy.projectLabels[3] }}</strong><p>{{ project.result }}</p></div>
-            </div>
+            <p class="project-summary">{{ project.summary }}</p>
+            <button class="project-more" type="button" @click="selectedProject = project">
+              <Eye :size="16" :stroke-width="2" aria-hidden="true" />
+              {{ copy.projectModalLabel }}
+            </button>
           </article>
         </div>
       </section>
@@ -637,9 +849,18 @@ onUnmounted(() => {
           <h2>{{ copy.experienceTitle }}</h2>
         </div>
         <div class="career-strip reveal">
-          <strong>{{ copy.company }}</strong>
-          <span>{{ copy.tenure }}</span>
+          <div class="career-meta">
+            <strong>{{ copy.company }}</strong>
+            <span>{{ copy.tenure }}</span>
+          </div>
           <p>{{ copy.careerSummary }}</p>
+          <div class="career-award">
+            <Award :size="24" :stroke-width="1.8" aria-hidden="true" />
+            <span>
+              <small>{{ copy.awardLabel }}</small>
+              <strong>{{ copy.awardTitle }}</strong>
+            </span>
+          </div>
         </div>
         <div class="experience-board reveal">
           <div class="experience-board-head">
@@ -652,11 +873,14 @@ onUnmounted(() => {
               <small>{{ item.role }}</small>
             </div>
             <div class="experience-content">
-              <p>{{ item.company }}</p>
+              <p><Building2 :size="16" :stroke-width="1.9" aria-hidden="true" />{{ item.company }}</p>
               <h3>{{ item.title }}</h3>
               <span>{{ item.summary }}</span>
               <details>
-                <summary>{{ copy.experienceAction }}</summary>
+                <summary>
+                  <ListChecks :size="16" :stroke-width="2" aria-hidden="true" />
+                  {{ copy.experienceAction }}
+                </summary>
                 <ul>
                   <li v-for="bullet in item.bullets" :key="bullet">{{ bullet }}</li>
                 </ul>
@@ -672,7 +896,8 @@ onUnmounted(() => {
           <h2>{{ copy.frameworkTitle }}</h2>
         </div>
         <div class="framework-stats reveal">
-          <div v-for="stat in copy.frameworkStats" :key="stat[0]">
+          <div v-for="(stat, index) in copy.frameworkStats" :key="stat[0]">
+            <component :is="frameworkIcons[index]" :size="21" :stroke-width="1.8" aria-hidden="true" />
             <strong>{{ stat[0] }}</strong>
             <span>{{ stat[1] }}</span>
           </div>
@@ -695,7 +920,9 @@ onUnmounted(() => {
         </div>
         <div class="workflow-grid">
           <article v-for="(item, index) in copy.workflow" :key="item" class="workflow-item reveal">
-            <span>{{ String(index + 1).padStart(2, '0') }}</span>
+            <span class="workflow-icon" aria-hidden="true">
+              <component :is="workflowIcons[index]" :size="23" :stroke-width="1.8" />
+            </span>
             <p>{{ item }}</p>
           </article>
         </div>
@@ -711,24 +938,64 @@ onUnmounted(() => {
       </section>
 
       <section id="contact" class="section contact reveal">
-        <div class="section-heading">
-          <p class="eyebrow">Contact</p>
-          <h2 class="contact-title">{{ copy.contactTitle }}</h2>
-        </div>
-        <p>{{ copy.contactText }}</p>
-        <div class="contact-panel">
-          <div class="contact-grid" aria-label="Contact details">
-            <div v-for="item in copy.contactCards" :key="item[0]">
-              <span>{{ item[0] }}</span>
-              <strong>{{ item[1] }}</strong>
-            </div>
+        <div class="contact-layout">
+          <div class="contact-copy">
+            <p class="eyebrow">Contact</p>
+            <h2 class="contact-title">{{ copy.contactTitle }}</h2>
+            <p>{{ copy.contactText }}</p>
           </div>
-          <div class="contact-cta">
-            <p>{{ copy.contactCtaText }}</p>
-            <a class="primary-action contact-mail" :href="`mailto:${profile.email}`">{{ copy.contactMailLabel }}</a>
+          <div class="contact-panel">
+            <div class="contact-grid" aria-label="Contact details">
+              <div v-for="item in copy.contactCards" :key="item[0]">
+                <span>{{ item[0] }}</span>
+                <strong>{{ item[1] }}</strong>
+              </div>
+            </div>
+            <div class="contact-cta">
+              <p>{{ copy.contactCtaText }}</p>
+              <a class="primary-action contact-mail" :href="`mailto:${profile.email}`">{{ copy.contactMailLabel }}</a>
+            </div>
           </div>
         </div>
       </section>
     </main>
+
+    <div
+      v-if="selectedProject"
+      class="project-modal"
+      role="dialog"
+      aria-modal="true"
+      :aria-label="selectedProject.name"
+      @click.self="selectedProject = null"
+    >
+      <article class="project-modal-card">
+        <button class="modal-close" type="button" :aria-label="copy.closeLabel" @click="selectedProject = null">
+          ×
+        </button>
+        <div class="project-modal-head">
+          <span>{{ selectedProject.period }}</span>
+          <h3>{{ selectedProject.name }}</h3>
+          <p>{{ selectedProject.stack }}</p>
+        </div>
+        <div class="project-modal-body">
+          <section>
+            <strong>{{ copy.projectLabels[0] }}</strong>
+            <p>{{ selectedProject.detail.overview }}</p>
+          </section>
+          <section>
+            <strong>{{ copy.projectLabels[1] }}</strong>
+            <ul>
+              <li v-for="item in selectedProject.detail.role" :key="item">{{ item }}</li>
+            </ul>
+          </section>
+          <section>
+            <strong>{{ copy.projectLabels[2] }}</strong>
+            <ul>
+              <li v-for="item in selectedProject.detail.contribution" :key="item">{{ item }}</li>
+            </ul>
+          </section>
+        </div>
+      </article>
+    </div>
   </div>
 </template>

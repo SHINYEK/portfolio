@@ -5,9 +5,9 @@
     "preview": "vite preview --host 127.0.0.1"
   },
   "dependencies": {
+    "@lucide/vue": "^1.29.0",
     "@vitejs/plugin-vue": "latest",
     "vite": "latest",
     "vue": "latest"
-  },
-  "devDependencies": {}
+  }
 }
